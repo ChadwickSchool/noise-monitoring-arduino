@@ -1,0 +1,432 @@
+//detects if ambient sound is above a certain level, and if so, triggers a LED
+
+const int pinAdc = A0;
+
+void setup()
+{
+  pinMode(10, OUTPUT);
+  pinMode(11, OUTPUT);
+  pinMode(12, OUTPUT);
+  Serial.begin(115200);
+}
+
+//gradient mode allows the colors to switch more smoothly (priority over rainbow mode and gradient rainbow mode)
+boolean activateGradientMode = true; //setting
+
+//gradient rainbow, flashes through colors with gradient (priority over rainbow mode)
+boolean activateRainbowGradientMode = false; //setting
+double rainbowGradientModeDelaySec = 0.01; //refine
+int rainbowGradientModeDelay = int(rainbowGradientModeDelaySec * 1000);
+
+//rainbow mode flashes through all colors with a set delay
+boolean activateRainbowMode = false; //setting
+double rainbowModeDelaySec = 0.2; //refine
+int rainbowModeDelay = int(rainbowModeDelaySec * 1000);
+
+//last reading of sound sensor, used for reading smoothing
+int lastSum = 0;
+
+//different volumes at which light changes (green, yellow, red)
+int volumeLevelOne = 300; //refine
+int volumeLevelTwo = 400; //refine
+int volumeLevelThree = 600; //refine
+
+//minimum amount of time a light will stay on for (flickering prevention)
+double minLightFlashSec = 2.0; //refine
+int minLightFlash = int(minLightFlashSec * 100);
+
+//delay values set to minimum light flash when triggered
+int greenDelay = 0;
+int yellowDelay = 0;
+int redDelay = 0;
+
+//pins from which LED receives color info, RGB
+int redPin = 10;
+int greenPin = 11;
+int bluePin = 12;
+
+//tentative variables representing information sent through update email
+double disruptionLength = 0.0;
+String disruptionPlace = "A1";
+double disLength = disruptionLength;
+String disPlace = disruptionPlace;
+
+void loop()
+{
+
+  //ignored if gradient mode not activated
+  if (activateGradientMode)
+    trueGradient();
+
+  //ignored if rainbow gradient mode not activated
+  if (activateRainbowGradientMode) {
+    rainbowGradient();
+  }
+
+  //ignored if rainbow or rainbow gradient mode not activated
+  if (activateRainbowMode) {
+    rainbow();
+  }
+
+  //set sum to rough sensor reading
+  long sum = 0;
+  for (int i = 0; i < 32; i++)
+    sum += analogRead(pinAdc);
+
+  sum >>= 5;
+
+  //smooth sound sensor readings
+  double filtered = (0.2 * sum) + (0.8 * lastSum);
+
+  //if volume greater than level three
+  if (sum >= volumeLevelThree)
+  {
+    //turn on red light
+    redOn();
+    redDelay = minLightFlash;
+
+    //if volume between level two and level three
+  } else if (sum >= volumeLevelTwo && sum < volumeLevelThree)
+  {
+    //turn on yellow light
+    if (redDelay <= 0) {
+      yellowOn();
+      yellowDelay = minLightFlash;
+    }
+
+    // if volume between level one and level two
+  } else if (sum >= volumeLevelOne && sum < volumeLevelTwo)
+  {
+    //turn on green light
+    if (yellowDelay <= 0 && redDelay <= 0) {
+      greenOn();
+      greenDelay = minLightFlash;
+    }
+
+    // if volume less than level one
+  } else {
+    //otherwise, turn off
+    if (greenDelay <= 0 && yellowDelay <= 0 && redDelay <= 0) {
+      lightOff();
+    }
+  }
+
+  //print smoothed sensor reading to graph
+  Serial.println(sum);
+
+  delay(10);
+
+  //sets last sum for sensor smoothing next loop
+  lastSum = filtered;
+
+  delayLight();
+}
+
+//changes light delay values accordingly
+void delayLight() {
+
+  //decrement the green light delay if it is a value greater than 0
+  if (greenDelay > 0)
+    greenDelay--;
+
+  //decrement the yellow light delay if it is a value greater than 0
+  if (yellowDelay > 0)
+    yellowDelay--;
+
+  //decrement the red light delay if it is a value greater than 0
+  if (redDelay > 0) {
+    redDelay--;
+
+    //increment disruption length while red delay is greater than 0
+    disruptionLength = disruptionLength + 0.1;
+
+    //after red light delay runs out, send a report (tentative)
+    if (redDelay <= 0) {
+      //sendReport(disruptionLength, disruptionPlace);
+      //"Library section " + disPlace + " was disrupted for " + disLength + " seconds."
+
+      //reset disruption length after sending report
+      disruptionLength = 0.0;
+    }
+
+  }
+}
+
+//disco lights ¯\_(ツ)_/¯
+void rainbow() {
+  while (1 > 0) {
+
+    redOn();
+    delay(rainbowModeDelay);
+
+    greenOn();
+    delay(rainbowModeDelay);
+
+    blueOn();
+    delay(rainbowModeDelay);
+
+    yellowOn();
+    delay(rainbowModeDelay);
+
+    pinkOn();
+    delay(rainbowModeDelay);
+
+    aquaOn();
+    delay(rainbowModeDelay);
+
+    whiteOn();
+    delay(rainbowModeDelay);
+
+    lightOff();
+    delay(rainbowModeDelay);
+
+  }
+}
+
+//gradient disco lights ¯\_(ツ)_/¯
+void rainbowGradient() {
+  int r = 0;
+  int g = 0;
+  int b = 0;
+  while (1 > 0) {
+
+    for (int red = 0; red <= 255; red++) {
+      r = red;
+      setColor(r, 0, 0);
+      delay(rainbowGradientModeDelay);
+    }
+
+    for (int green = 0; green <= 255; green++) {
+      g = green;
+      setColor(r, g, 0);
+      delay(rainbowGradientModeDelay);
+    }
+
+    for (int blue = 0; blue <= 255; blue++) {
+      b = blue;
+      setColor(r, g, b);
+      delay(rainbowGradientModeDelay);
+    }
+
+  }
+}
+
+//switches the colors more smoothly as volume increases/decrases
+void gradient() {
+  while (1 > 0) {
+
+    //set sum to rough sensor reading
+    long sum = 0;
+    for (int i = 0; i < 32; i++)
+      sum += analogRead(pinAdc);
+
+    sum >>= 5;
+
+    //smooth sound sensor readings
+    double filtered = (0.2 * sum) + (0.8 * lastSum);
+
+    //if volume greater than level three
+    if (sum >= volumeLevelThree)
+    {
+
+      //turn on gradient red light
+      if (sum >= volumeLevelThree + 255)
+      {
+        setColor(255, 0, 0);
+      } else {
+        setColor(sum - volumeLevelThree, 0, 0);
+      }
+
+      //if volume between level two and level three
+    } else if (sum >= volumeLevelTwo && sum < volumeLevelThree)
+    {
+
+      //turn on gradient yellow light
+      if (sum >= volumeLevelTwo + 255)
+      {
+        setColor(255, 255, 0);
+      } else {
+        setColor(sum - volumeLevelTwo, sum - volumeLevelTwo, 0);
+      }
+
+      // if volume between level one and level two
+    } else if (sum >= volumeLevelOne && sum < volumeLevelTwo)
+    {
+
+      //turn on gradient green light
+      if (sum >= volumeLevelOne + 255)
+      {
+        setColor(0, 255, 0);
+      } else {
+        setColor(0, sum - volumeLevelOne, 0);
+      }
+
+      // if volume less than level one
+    } else {
+      //otherwise, turn off
+      lightOff();
+    }
+
+    //print smoothed sensor reading to graph
+    Serial.println(sum);
+
+    delay(10);
+
+    //sets last sum for sensor smoothing next loop
+    lastSum = filtered;
+
+  }
+
+}
+
+void trueGradient() {
+  int r = 0;
+  int g = 0;
+
+  int changeFactor = 25;
+  while (1 > 0) {
+
+    //set sum to rough sensor reading
+    long sum = 0;
+    for (int i = 0; i < 32; i++)
+      sum += analogRead(pinAdc);
+
+    sum >>= 5;
+
+    //smooth sound sensor readings
+    double filtered = (0.2 * sum) + (0.8 * lastSum);
+
+    //if volume greater than level three
+    if (sum >= volumeLevelThree)
+    {
+
+      if (r < 250)
+        r = r + changeFactor;
+
+      if (g > 0)
+        g = g - changeFactor;
+
+      redDelay = minLightFlash;
+
+      //if volume between level two and level three
+    } else if (sum >= volumeLevelTwo && sum < volumeLevelThree)
+    {
+
+      if (r < 125)
+        r = r + changeFactor;
+
+      if (g < 125)
+        g = g + changeFactor;
+
+      if (g > 125)
+        g = g - changeFactor;
+
+      yellowDelay = minLightFlash;
+
+      // if volume between level one and level two
+    } else if (sum >= volumeLevelOne && sum < volumeLevelTwo)
+    {
+
+      if (r > 0)
+        r = r - changeFactor;
+
+      if (g < 250)
+        g = g + changeFactor;
+
+      greenDelay = minLightFlash;
+
+      // if volume less than level one
+    } else {
+      if (greenDelay <= 0 && yellowDelay <= 0 && redDelay <= 0) {
+        //otherwise, turn off
+        lightOff();
+        r = 0;
+        g = 0;
+      }
+    }
+
+    if (sum >= volumeLevelOne)
+      setColor(250 - r, 250 - g, 255);
+
+    //print smoothed sensor reading to graph
+    Serial.println(sum);
+
+    delay(10);
+
+    //sets last sum for sensor smoothing next loop
+    lastSum = filtered;
+
+    delayLight();
+
+  }
+
+}
+
+//turn on red light
+void redOn() {
+  digitalWrite(redPin, LOW);
+  digitalWrite(greenPin, HIGH);
+  digitalWrite(bluePin, HIGH);
+}
+
+//turn on green light
+void greenOn() {
+  digitalWrite(redPin, HIGH);
+  digitalWrite(greenPin, LOW);
+  digitalWrite(bluePin, HIGH);
+}
+
+//turn on blue light
+void blueOn() {
+  digitalWrite(redPin, HIGH);
+  digitalWrite(greenPin, HIGH);
+  digitalWrite(bluePin, LOW);
+}
+
+//turn on yellow light
+void yellowOn() {
+  digitalWrite(redPin, LOW);
+  digitalWrite(greenPin, LOW);
+  digitalWrite(bluePin, HIGH);
+}
+
+//turn on pink light
+void pinkOn() {
+  digitalWrite(redPin, LOW);
+  digitalWrite(greenPin, HIGH);
+  digitalWrite(bluePin, LOW);
+}
+
+//turn on aqua light
+void aquaOn() {
+  digitalWrite(redPin, HIGH);
+  digitalWrite(greenPin, LOW);
+  digitalWrite(bluePin, LOW);
+}
+
+//turn on white light
+void whiteOn() {
+  digitalWrite(redPin, LOW);
+  digitalWrite(greenPin, LOW);
+  digitalWrite(bluePin, LOW);
+}
+
+//turn off light
+void lightOff() {
+  digitalWrite(redPin, HIGH);
+  digitalWrite(greenPin, HIGH);
+  digitalWrite(bluePin, HIGH);
+}
+
+//sets color to rgb value, for use in gradient mode
+void setColor(int red, int green, int blue)
+{
+#ifdef COMMON_ANODE
+  red = 255 - red;
+  green = 255 - green;
+  blue = 255 - blue;
+#endif
+  analogWrite(redPin, red);
+  analogWrite(greenPin, green);
+  analogWrite(bluePin, blue);
+}
