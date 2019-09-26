@@ -15,12 +15,12 @@ boolean activateGradientMode = true; //setting
 
 //gradient rainbow, flashes through colors with gradient (priority over rainbow mode)
 boolean activateRainbowGradientMode = false; //setting
-double rainbowGradientModeDelaySec = 0.01; //refine
+double rainbowGradientModeDelaySec = 0.1; //refine
 int rainbowGradientModeDelay = int(rainbowGradientModeDelaySec * 1000);
 
 //rainbow mode flashes through all colors with a set delay
 boolean activateRainbowMode = false; //setting
-double rainbowModeDelaySec = 0.2; //refine
+double rainbowModeDelaySec = 0.1; //refine
 int rainbowModeDelay = int(rainbowModeDelaySec * 1000);
 
 //last reading of sound sensor, used for reading smoothing
@@ -56,7 +56,7 @@ void loop()
 
   //ignored if gradient mode not activated
   if (activateGradientMode)
-    trueGradient();
+    gradient();
 
   //ignored if rainbow gradient mode not activated
   if (activateRainbowGradientMode) {
@@ -159,25 +159,25 @@ void rainbow() {
     redOn();
     delay(rainbowModeDelay);
 
-    greenOn();
-    delay(rainbowModeDelay);
-
-    blueOn();
+    orangeOn();
     delay(rainbowModeDelay);
 
     yellowOn();
     delay(rainbowModeDelay);
 
-    pinkOn();
+    greenOn();
     delay(rainbowModeDelay);
 
     aquaOn();
     delay(rainbowModeDelay);
 
-    whiteOn();
+    blueOn();
     delay(rainbowModeDelay);
 
-    lightOff();
+    pinkOn();
+    delay(rainbowModeDelay);
+
+    whiteOn();
     delay(rainbowModeDelay);
 
   }
@@ -213,73 +213,6 @@ void rainbowGradient() {
 
 //switches the colors more smoothly as volume increases/decrases
 void gradient() {
-  while (1 > 0) {
-
-    //set sum to rough sensor reading
-    long sum = 0;
-    for (int i = 0; i < 32; i++)
-      sum += analogRead(pinAdc);
-
-    sum >>= 5;
-
-    //smooth sound sensor readings
-    double filtered = (0.2 * sum) + (0.8 * lastSum);
-
-    //if volume greater than level three
-    if (sum >= volumeLevelThree)
-    {
-
-      //turn on gradient red light
-      if (sum >= volumeLevelThree + 255)
-      {
-        setColor(255, 0, 0);
-      } else {
-        setColor(sum - volumeLevelThree, 0, 0);
-      }
-
-      //if volume between level two and level three
-    } else if (sum >= volumeLevelTwo && sum < volumeLevelThree)
-    {
-
-      //turn on gradient yellow light
-      if (sum >= volumeLevelTwo + 255)
-      {
-        setColor(255, 255, 0);
-      } else {
-        setColor(sum - volumeLevelTwo, sum - volumeLevelTwo, 0);
-      }
-
-      // if volume between level one and level two
-    } else if (sum >= volumeLevelOne && sum < volumeLevelTwo)
-    {
-
-      //turn on gradient green light
-      if (sum >= volumeLevelOne + 255)
-      {
-        setColor(0, 255, 0);
-      } else {
-        setColor(0, sum - volumeLevelOne, 0);
-      }
-
-      // if volume less than level one
-    } else {
-      //otherwise, turn off
-      lightOff();
-    }
-
-    //print smoothed sensor reading to graph
-    Serial.println(sum);
-
-    delay(10);
-
-    //sets last sum for sensor smoothing next loop
-    lastSum = filtered;
-
-  }
-
-}
-
-void trueGradient() {
   int r = 0;
   int g = 0;
 
@@ -312,36 +245,43 @@ void trueGradient() {
     } else if (sum >= volumeLevelTwo && sum < volumeLevelThree)
     {
 
-      if (r < 125)
-        r = r + changeFactor;
+      if (redDelay <= 0) {
 
-      if (g < 125)
-        g = g + changeFactor;
+        if (r < 250)
+          r = r + changeFactor;
 
-      if (g > 125)
-        g = g - changeFactor;
+        if (g < 250)
+          g = g + changeFactor;
 
-      yellowDelay = minLightFlash;
+        if (g > 125)
+          g = g - changeFactor;
+
+        yellowDelay = minLightFlash;
+
+      }
 
       // if volume between level one and level two
     } else if (sum >= volumeLevelOne && sum < volumeLevelTwo)
     {
 
-      if (r > 0)
-        r = r - changeFactor;
+      if (yellowDelay <= 0 && redDelay <= 0) {
 
-      if (g < 250)
-        g = g + changeFactor;
+        if (r > 0)
+          r = r - changeFactor;
 
-      greenDelay = minLightFlash;
+        if (g < 250)
+          g = g + changeFactor;
+
+        greenDelay = minLightFlash;
+
+      }
 
       // if volume less than level one
     } else {
       if (greenDelay <= 0 && yellowDelay <= 0 && redDelay <= 0) {
         //otherwise, turn off
+
         lightOff();
-        r = 0;
-        g = 0;
       }
     }
 
@@ -409,6 +349,11 @@ void whiteOn() {
   digitalWrite(redPin, LOW);
   digitalWrite(greenPin, LOW);
   digitalWrite(bluePin, LOW);
+}
+
+//turn on orange light
+void orangeOn() {
+  setColor(255, 165, 0);
 }
 
 //turn off light
