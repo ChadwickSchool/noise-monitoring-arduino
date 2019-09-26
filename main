@@ -351,11 +351,6 @@ void whiteOn() {
   digitalWrite(bluePin, LOW);
 }
 
-//turn on orange light
-void orangeOn() {
-  setColor(255, 165, 0);
-}
-
 //turn off light
 void lightOff() {
   digitalWrite(redPin, HIGH);
