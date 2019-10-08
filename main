@@ -1,4 +1,5 @@
 //detects if ambient sound is above a certain level, and if so, triggers a LED
+//wire color order: yellow, purple, orange, brown
 
 const int pinAdc = A0;
 
@@ -20,16 +21,16 @@ int rainbowGradientModeDelay = int(rainbowGradientModeDelaySec * 1000);
 
 //rainbow mode flashes through all colors with a set delay
 boolean activateRainbowMode = false; //setting
-double rainbowModeDelaySec = 0.1; //refine
+double rainbowModeDelaySec = 1.0; //refine
 int rainbowModeDelay = int(rainbowModeDelaySec * 1000);
 
 //last reading of sound sensor, used for reading smoothing
 int lastSum = 0;
 
 //different volumes at which light changes (green, yellow, red)
-int volumeLevelOne = 300; //refine
-int volumeLevelTwo = 400; //refine
-int volumeLevelThree = 600; //refine
+int volumeLevelOne = 500; //refine
+int volumeLevelTwo = 600; //refine
+int volumeLevelThree = 800; //refine
 
 //minimum amount of time a light will stay on for (flickering prevention)
 double minLightFlashSec = 2.0; //refine
@@ -253,9 +254,6 @@ void gradient() {
         if (g < 250)
           g = g + changeFactor;
 
-        if (g > 125)
-          g = g - changeFactor;
-
         yellowDelay = minLightFlash;
 
       }
@@ -281,6 +279,8 @@ void gradient() {
       if (greenDelay <= 0 && yellowDelay <= 0 && redDelay <= 0) {
         //otherwise, turn off
 
+        r = 0;
+        g = 0;
         lightOff();
       }
     }
@@ -356,6 +356,11 @@ void lightOff() {
   digitalWrite(redPin, HIGH);
   digitalWrite(greenPin, HIGH);
   digitalWrite(bluePin, HIGH);
+}
+
+//turn on orange light
+void orangeOn() {
+  setColor(0, 90, 255);
 }
 
 //sets color to rgb value, for use in gradient mode
