@@ -11,6 +11,13 @@ void setup()
   Serial.begin(115200);
 }
 
+//variable which sends a disruption report when activated
+boolean sendDisruption = false;
+
+//place and length information coordinated with disruption report
+String disruptionPlace = "A1";
+double disruptionLength = 0.0;
+
 //gradient mode allows the colors to switch more smoothly (priority over rainbow mode and gradient rainbow mode)
 boolean activateGradientMode = true; //setting
 
@@ -45,12 +52,6 @@ int redDelay = 0;
 int redPin = 10;
 int greenPin = 11;
 int bluePin = 12;
-
-//tentative variables representing information sent through update email
-double disruptionLength = 0.0;
-String disruptionPlace = "A1";
-double disLength = disruptionLength;
-String disPlace = disruptionPlace;
 
 void loop()
 {
@@ -141,13 +142,9 @@ void delayLight() {
     //increment disruption length while red delay is greater than 0
     disruptionLength = disruptionLength + 0.1;
 
-    //after red light delay runs out, send a report (tentative)
+    //after red light delay runs out, send a report
     if (redDelay <= 0) {
-      //sendReport(disruptionLength, disruptionPlace);
-      //"Library section " + disPlace + " was disrupted for " + disLength + " seconds."
-
-      //reset disruption length after sending report
-      disruptionLength = 0.0;
+      sendDisruption = true;
     }
 
   }
