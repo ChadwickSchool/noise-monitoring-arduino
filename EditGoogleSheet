@@ -37,6 +37,7 @@ int temp_av = 0;
 char server[] = "api.pushingbox.com";
 WiFiClient client;
 
+//merge setup and loop methods with those in soundTest1?
 
 void setup()
 {
