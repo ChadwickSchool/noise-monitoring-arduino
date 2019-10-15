@@ -35,8 +35,8 @@ int rainbowModeDelay = int(rainbowModeDelaySec * 1000);
 int lastSum = 0;
 
 //different volumes at which light changes (green, yellow, red)
-int volumeLevelOne = 500; //refine
-int volumeLevelTwo = 600; //refine
+int volumeLevelOne = 400; //refine
+int volumeLevelTwo = 500; //refine
 int volumeLevelThree = 800; //refine
 
 //minimum amount of time a light will stay on for (flickering prevention)
@@ -57,71 +57,86 @@ void loop()
 {
 
   //ignored if gradient mode not activated
-  if (activateGradientMode)
+  if (activateGradientMode) {
     gradient();
 
-  //ignored if rainbow gradient mode not activated
-  if (activateRainbowGradientMode) {
+    //ignored if rainbow gradient mode not activated
+  } else if (activateRainbowGradientMode) {
+
     rainbowGradient();
-  }
 
-  //ignored if rainbow or rainbow gradient mode not activated
-  if (activateRainbowMode) {
+    //ignored if rainbow or rainbow gradient mode not activated
+  } else if (activateRainbowMode) {
+
     rainbow();
-  }
 
-  //set sum to rough sensor reading
-  long sum = 0;
-  for (int i = 0; i < 32; i++)
-    sum += analogRead(pinAdc);
-
-  sum >>= 5;
-
-  //smooth sound sensor readings
-  double filtered = (0.2 * sum) + (0.8 * lastSum);
-
-  //if volume greater than level three
-  if (sum >= volumeLevelThree)
-  {
-    //turn on red light
-    redOn();
-    redDelay = minLightFlash;
-
-    //if volume between level two and level three
-  } else if (sum >= volumeLevelTwo && sum < volumeLevelThree)
-  {
-    //turn on yellow light
-    if (redDelay <= 0) {
-      yellowOn();
-      yellowDelay = minLightFlash;
-    }
-
-    // if volume between level one and level two
-  } else if (sum >= volumeLevelOne && sum < volumeLevelTwo)
-  {
-    //turn on green light
-    if (yellowDelay <= 0 && redDelay <= 0) {
-      greenOn();
-      greenDelay = minLightFlash;
-    }
-
-    // if volume less than level one
+    //if all else fails, activate the default step lights mode
   } else {
-    //otherwise, turn off
-    if (greenDelay <= 0 && yellowDelay <= 0 && redDelay <= 0) {
-      lightOff();
-    }
+
+    stepLights();
   }
 
-  //print smoothed sensor reading to graph
-  Serial.println(sum);
+}
 
-  delay(10);
+void stepLights() {
 
-  //sets last sum for sensor smoothing next loop
-  lastSum = filtered;
+  while (1 > 0) {
 
-  delayLight();
+    //set sum to rough sensor reading
+    long sum = 0;
+    for (int i = 0; i < 32; i++)
+      sum += analogRead(pinAdc);
+
+    sum >>= 5;
+
+    //smooth sound sensor readings
+    double filtered = (0.2 * sum) + (0.8 * lastSum);
+
+    //if volume greater than level three
+    if (sum >= volumeLevelThree)
+    {
+      //turn on red light
+      redOn();
+      redDelay = minLightFlash;
+
+      //if volume between level two and level three
+    } else if (sum >= volumeLevelTwo && sum < volumeLevelThree)
+    {
+      //turn on yellow light
+      if (redDelay <= 0) {
+        yellowOn();
+        yellowDelay = minLightFlash;
+      }
+
+      // if volume between level one and level two
+    } else if (sum >= volumeLevelOne && sum < volumeLevelTwo)
+    {
+      //turn on green light
+      if (yellowDelay <= 0 && redDelay <= 0) {
+        greenOn();
+        greenDelay = minLightFlash;
+      }
+
+      // if volume less than level one
+    } else {
+      //otherwise, turn off
+      if (greenDelay <= 0 && yellowDelay <= 0 && redDelay <= 0) {
+        lightOff();
+      }
+    }
+
+    //print smoothed sensor reading to graph
+    Serial.println(sum);
+
+    delay(10);
+
+    //sets last sum for sensor smoothing next loop
+    lastSum = filtered;
+
+    delayLight();
+
+  }
+
 }
 
 //changes light delay values accordingly
