@@ -454,24 +454,25 @@ void setColor(int red, int green, int blue)
   analogWrite(bluePin, blue);
 }
 
+//send report message with time and place information
+//client.print("Library section " + disruptionPlace + " was disrupted for " + disruptionLength + " seconds.");
 void sendReport() {
 
   // Post to Google Form.............................................
-  if (client.connect(server, 80)) {
+  if (client.connect(server, 80))
+  {
     k = 0;
     Serial.println("connected");
     client.print("GET /pushingbox?devid=v45469F2B40A60FB&status=");
-
-    //send report message with time and place information
-    client.print("Library section " + disruptionPlace + " was disrupted for " + disruptionLength + " seconds.");
-    client.print("HTTP/1.1\r\nHost: api.pushingbox.com\r\n\r\n");
-    client.println("User-Agent: Arduino");
+    client.print("longerstring");
+    client.print(" HTTP/1.1\r\n");
+    client.print("Host: api.pushingbox.com\r\n\r\n");
+    client.println("Connection: close");
     client.println();
     Serial.println(postmsg);
     Serial.println("Host: api.pushingbox.com");
     Serial.println("Connection: close");
     Serial.println();
-
     delay(1000);
     client.stop();
     ranNum++;
