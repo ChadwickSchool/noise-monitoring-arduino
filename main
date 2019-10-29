@@ -146,7 +146,7 @@ void loop()
 
 void stepLights() {
 
-  while (1 > 0) {
+  while (true) {
 
     //set sum to rough sensor reading
     long sum = 0;
@@ -209,12 +209,14 @@ void stepLights() {
 void delayLight() {
 
   //decrement the green light delay if it is a value greater than 0
-  if (greenDelay > 0)
+  if (greenDelay > 0) {
     greenDelay--;
+  }
 
   //decrement the yellow light delay if it is a value greater than 0
-  if (yellowDelay > 0)
+  if (yellowDelay > 0) {
     yellowDelay--;
+  }
 
   //decrement the red light delay if it is a value greater than 0
   if (redDelay > 0) {
@@ -234,7 +236,7 @@ void delayLight() {
 
 //disco lights ¯\_(ツ)_/¯
 void rainbow() {
-  while (1 > 0) {
+  while (true) {
 
     redOn();
     delay(rainbowModeDelay);
@@ -268,7 +270,7 @@ void rainbowGradient() {
   int r = 0;
   int g = 0;
   int b = 0;
-  while (1 > 0) {
+  while (true) {
 
     for (int red = 0; red <= 255; red++) {
       r = red;
@@ -297,7 +299,7 @@ void gradient() {
   int g = 0;
 
   int changeFactor = 25;
-  while (1 > 0) {
+  while (true) {
 
     //set sum to rough sensor reading
     long sum = 0;
@@ -313,7 +315,7 @@ void gradient() {
     if (sum >= volumeLevelThree)
     {
 
-      if (r < 250)
+      if (r < changeFactor * 10)
         r = r + changeFactor;
 
       if (g > 0)
@@ -327,10 +329,10 @@ void gradient() {
 
       if (redDelay <= 0) {
 
-        if (r < 250)
+        if (r < changeFactor * 10)
           r = r + changeFactor;
 
-        if (g < 250)
+        if (g < changeFactor * 10)
           g = g + changeFactor;
 
         yellowDelay = minLightFlash;
@@ -346,7 +348,7 @@ void gradient() {
         if (r > 0)
           r = r - changeFactor;
 
-        if (g < 250)
+        if (g < changeFactor * 10)
           g = g + changeFactor;
 
         greenDelay = minLightFlash;
@@ -365,7 +367,7 @@ void gradient() {
     }
 
     if (sum >= volumeLevelOne)
-      setColor(250 - r, 250 - g, 255);
+      setColor(changeFactor * 10 - r, changeFactor * 10 - g, 255);
 
     //print smoothed sensor reading to graph
     //Serial.println(sum);
