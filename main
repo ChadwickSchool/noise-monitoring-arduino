@@ -78,6 +78,9 @@ void setup()
   pinMode(11, OUTPUT);
   pinMode(12, OUTPUT);
   Serial.begin(9600);
+
+  pinkOn();
+  delay(3000);
 }
 
 //place and length information coordinated with disruption report
@@ -223,7 +226,7 @@ void delayLight() {
     redDelay--;
 
     //increment disruption length while red delay is greater than 0
-    disruptionLength = disruptionLength + 0.1;
+    disruptionLength = disruptionLength + 0.01;
 
     //after red light delay runs out, send a report
     if (redDelay <= 0) {
@@ -293,7 +296,7 @@ void rainbowGradient() {
   }
 }
 
-//switches the colors more smoothly as volume increases/decrases
+//switches the colors more smoothly as volume increases/decreases
 void gradient() {
   int r = 0;
   int g = 0;
@@ -468,8 +471,8 @@ void sendReport() {
     Serial.println("Connected to google form.");
     client.print("GET /pushingbox?devid=v45469F2B40A60FB&status=");
 
-    Serial.println("Attempting to send message: Library_section:‎‎_" + disruptionPlace + "_was_disrupted_for:_" + disruptionLength + "_seconds.");
-    client.print("Library_section:‎‎_" + disruptionPlace + "_was_disrupted_for:_" + disruptionLength + "_seconds.");
+    Serial.println("Attempting to send message: Library_section‎‎_" + disruptionPlace + "_was_disrupted_for_" + (int) disruptionLength + "_seconds");
+    client.print("Library_section_" + disruptionPlace + "_was_disrupted_for_" + (int) disruptionLength + "_seconds");
 
     //reset disruption length
     disruptionLength = 0.0;
