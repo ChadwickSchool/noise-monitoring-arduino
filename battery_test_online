@@ -78,6 +78,7 @@ void setup()
   lightsOff();
 
   Serial.println("00:00");
+  sendReport();
 }
 
 //pins from which LED receives color info, RGB
