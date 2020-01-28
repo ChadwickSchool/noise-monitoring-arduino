@@ -45,10 +45,10 @@ void loop() {
 void outputTime() {
  
   if (secondsElapsed == 0)
-    Serial.println("00:00");
+    Serial.println(String("00:00"));
     
   if (secondsElapsed > 0 && secondsElapsed < 60)
-    Serial.println("00:" + secondsElapsed);
+    Serial.println(String("00:") + String(secondsElapsed));
     
   if (secondsElapsed >= 60) {
     
@@ -58,22 +58,21 @@ void outputTime() {
     if (minutesElapsed < 10) {
       
       if (remainingSeconds == 0) {
-        Serial.println(String("0") + minutesElapsed + ":00");
+        Serial.println(String("0") + String(minutesElapsed) + String(":00"));
       } else {
-        Serial.println(String("0") + minutesElapsed + ":" + remainingSeconds);
+        Serial.println(String("0") + String(minutesElapsed) + String(":") + String(remainingSeconds));
       }
       
     } else {
 
       if (remainingSeconds == 0) {
-        Serial.println(minutesElapsed + ":00");
+        Serial.println(String(minutesElapsed) + String(":00"));
       } else {
-        Serial.println(minutesElapsed + ":" + remainingSeconds);
+        Serial.println(String(minutesElapsed) + String(":") + String(remainingSeconds));
       }
       
     }
   }
-  Serial.print(" time elapsed");
 }
 
 //turns on green light
