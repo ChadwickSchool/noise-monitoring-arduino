@@ -11,6 +11,7 @@
   int count = 0;
   double avg = 0;
   int maxSound = 0;
+  int minSound = 0
 
 void setup() {
   
@@ -32,6 +33,8 @@ void loop() {
   sum += relativeSound;
 
   maxSound = max(maxSound,relativeSound);
+  minSound = min(minSound,relativeSound);
+
 
   sum += relativeSound;
 
@@ -44,6 +47,8 @@ void loop() {
     count = 0;
     avg = 0;
     maxSound = 0;
+    minSound = 0
+
   }
 
   count++;
