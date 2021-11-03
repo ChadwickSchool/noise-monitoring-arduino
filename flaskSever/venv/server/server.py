@@ -9,5 +9,7 @@ def hello_world():
 @app.route("/update-sheet")
 def update_sheet():
     requestArgs = request.args
-    print(requestArgs['x'])
+    print(requestArgs["avg"])
+    print(requestArgs["max"])
+
     return f"Done: {requestArgs}\n"
