@@ -1,0 +1,90 @@
+//time variable definitions
+int secondsElapsed = 0;
+int minutesElapsed = 0;
+int remainingSeconds = 0;
+
+//arduino color pin correlation variables
+int redPin = 10;
+int greenPin = 11;
+int bluePin = 12;
+
+void setup() {
+
+  //color pin correlation
+  pinMode(10, OUTPUT);
+  pinMode(11, OUTPUT);
+  pinMode(12, OUTPUT);
+  Serial.begin(9600);
+
+  //begin with all of the lights off
+  lightsOff();
+}
+
+void loop() {
+
+    //output time elapsed
+    outputTime();
+
+    //wait five seconds
+    delay(5000);
+
+    //turn on green lights
+    lightsOn();
+
+    //wait five seconds
+    delay(5000);
+
+    //turn off lights
+    lightsOff();
+
+    //increment time elapsed by ten seconds
+    secondsElapsed = secondsElapsed + 10;
+}
+
+//outputs the current time elapsed in minute:second format
+void outputTime() {
+ 
+  if (secondsElapsed == 0)
+    Serial.println(String("00:00"));
+    
+  if (secondsElapsed > 0 && secondsElapsed < 60)
+    Serial.println(String("00:") + String(secondsElapsed));
+    
+  if (secondsElapsed >= 60) {
+    
+    minutesElapsed = secondsElapsed / 60;
+    remainingSeconds = secondsElapsed - (minutesElapsed * 60);
+    
+    if (minutesElapsed < 10) {
+      
+      if (remainingSeconds == 0) {
+        Serial.println(String("0") + String(minutesElapsed) + String(":00"));
+      } else {
+        Serial.println(String("0") + String(minutesElapsed) + String(":") + String(remainingSeconds));
+      }
+      
+    } else {
+
+      if (remainingSeconds == 0) {
+        Serial.println(String(minutesElapsed) + String(":00"));
+      } else {
+        Serial.println(String(minutesElapsed) + String(":") + String(remainingSeconds));
+      }
+      
+    }
+  }
+}
+
+//turns on green light
+void lightsOn() {
+  digitalWrite(redPin, HIGH);
+  digitalWrite(greenPin, LOW);
+  digitalWrite(bluePin, HIGH);
+}
+
+//turns off all lights
+void lightsOff() {
+  digitalWrite(redPin, HIGH);
+  digitalWrite(greenPin, HIGH);
+  digitalWrite(bluePin, HIGH);
+}

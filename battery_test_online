@@ -1,0 +1,223 @@
+//flashes green lights on for five seconds then off for five seconds, sends online report until batteries die
+
+#undef int
+#undef abs
+#undef double
+#undef float
+#undef round
+#include <SPI.h>
+#include <WiFiNINA.h>
+
+#include "arduino_secrets.h"
+
+const int pinAdc = A0;
+
+char devid[] = "v45469F2B40A60FB";  // THIS IS THE DEVICE ID FROM PUSHINGBOX
+
+int del = 300; // Amount of seconds delay between posting to google docs.
+
+char ssid[] = SECRET_SSID;        // your network SSID (name)
+char pass[] = SECRET_PASS;    // your network password (use for WPA, or use as key for WEP)
+int keyIndex = 0;                 // your network key Index number (needed only for WEP)
+int ranNum = 0;
+String Info;
+int maxNoise = 0;
+int maxTime;
+const int pinSig = A1;
+int light = 10;
+long arraySum[9];
+
+int status = WL_IDLE_STATUS;
+
+char postmsg[100];
+int k = 0;
+int temp_av = 0;
+char server[] = "api.pushingbox.com";
+WiFiClient client;
+
+void setup()
+{
+
+  Serial.begin(115200);
+
+  if (WiFi.status() == WL_NO_MODULE) {
+    Serial.println("Communication with WiFi module failed!");
+    // don't continue
+    while (true);
+  }
+
+  String fv = WiFi.firmwareVersion();
+  if (fv != "1.0.0") {
+    Serial.println("Please upgrade the firmware");
+  }
+
+  // attempt to connect to Wifi network:
+  while (status != WL_CONNECTED) {
+    Serial.print("Attempting to connect to Network named: ");
+    Serial.println(ssid);                   // print the network name (SSID);
+
+    // Connect to WPA/WPA2 network. Change this line if using open or WEP network:
+    status = WiFi.begin(ssid, pass);
+    // wait 10 seconds for connection:
+    delay(10000);
+    Serial.print("Testing server connection...");
+  }
+  if (client.connect(server, 80)) {
+    Serial.println("connected to server.");
+    Serial.println("");
+  }
+  // printWifiStatus();                        // you're connected now, so print out the status
+
+  pinMode(10, OUTPUT);
+  pinMode(11, OUTPUT);
+  pinMode(12, OUTPUT);
+  Serial.begin(115200);
+
+  pinkOn();
+  delay(3000);
+  lightsOff();
+
+  Serial.println("00:00");
+  sendReport();
+}
+
+//pins from which LED receives color info, RGB
+int redPin = 10;
+int greenPin = 11;
+int bluePin = 12;
+
+//form time varible definitions
+int delayMinutes = 5;
+int tenSecCount = 0;
+
+//monitor time variable definitions
+int secondsElapsed = 0;
+int minutesElapsed = 0;
+int remainingSeconds = 0;
+
+void loop()
+{
+
+  //wait five seconds
+  delay(5000);
+
+  //turn on green lights
+  greenOn();
+
+  //wait five seconds
+  delay(5000);
+
+  //turn off lights
+  lightsOff();
+
+  //increment tenSecCount by one
+  tenSecCount++;
+
+  //increment time elapsed by ten seconds
+  secondsElapsed = secondsElapsed + 10;
+
+  //output time elapsed
+  outputTime();
+
+  //waits for delayMinutes before sending report
+  if (tenSecCount == 6 * delayMinutes) {
+    sendReport();
+    tenSecCount = 0;
+  }
+  
+}
+
+//outputs the current time elapsed in monitor in minute:second format
+void outputTime() {
+ 
+  if (secondsElapsed == 0)
+    Serial.println(String("00:00"));
+    
+  if (secondsElapsed > 0 && secondsElapsed < 60)
+    Serial.println(String("00:") + String(secondsElapsed));
+    
+  if (secondsElapsed >= 60) {
+    
+    minutesElapsed = secondsElapsed / 60;
+    remainingSeconds = secondsElapsed - (minutesElapsed * 60);
+    
+    if (minutesElapsed < 10) {
+      
+      if (remainingSeconds == 0) {
+        Serial.println(String("0") + String(minutesElapsed) + String(":00"));
+      } else {
+        Serial.println(String("0") + String(minutesElapsed) + String(":") + String(remainingSeconds));
+      }
+      
+    } else {
+
+      if (remainingSeconds == 0) {
+        Serial.println(String(minutesElapsed) + String(":00"));
+      } else {
+        Serial.println(String(minutesElapsed) + String(":") + String(remainingSeconds));
+      }
+      
+    }
+  }
+}
+
+//turn on pink light
+void pinkOn() {
+  digitalWrite(redPin, LOW);
+  digitalWrite(greenPin, HIGH);
+  digitalWrite(bluePin, LOW);
+}
+
+//turn on green light
+void greenOn() {
+  digitalWrite(redPin, HIGH);
+  digitalWrite(greenPin, LOW);
+  digitalWrite(bluePin, HIGH);
+}
+
+
+//turn off light
+void lightsOff() {
+  digitalWrite(redPin, HIGH);
+  digitalWrite(greenPin, HIGH);
+  digitalWrite(bluePin, HIGH);
+}
+
+//send time report
+void sendReport() {
+
+  // Post to Google Form.............................................
+  if (client.connect(server, 80))
+  {
+    k = 0;
+    Serial.println();
+    Serial.println("Connected to google form.");
+    client.print("GET /pushingbox?devid=v45469F2B40A60FB&status=");
+
+    Serial.println("Attempting to send message: Still_Alive");
+    client.print("Still_Alive");
+
+    client.print(" HTTP/1.1\r\n");
+    client.print("Host: api.pushingbox.com\r\n\r\n");
+    client.println("Connection: close");
+    client.println();
+    Serial.println(postmsg);
+    Serial.println("Host: api.pushingbox.com");
+    Serial.println("Connection: close");
+    Serial.println();
+    delay(1000);
+    client.stop();
+    ranNum++;
+  }
+  delay(10000);
+
+  if (!client.connected())
+  {
+    Serial.println("Disconnecting from pushingbox.com.");
+    Serial.println();
+    client.stop();
+    k == 1;
+    return;
+  }
+
+}
