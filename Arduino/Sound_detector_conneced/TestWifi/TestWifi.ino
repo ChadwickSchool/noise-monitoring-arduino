@@ -28,7 +28,7 @@ void setup() {
     if (client.connect("script.google.com", 80)) {
       Serial.println("connected");
       // Make a HTTP request:
-      client.println("POST /macros/s/AKfycbzCOBoAl9rktpOCaPJ5BNWc1PbexzaN_JYhaMlChnqa5bbD7-cAaxv-QCeUkieKrf5G/exec?value1=3 HTTP/1.1");
+      client.println("POST /macros/s/AKfycbzCOBoAl9rktpOCaPJ5BNWc1PbexzaN_JYhaMlChnqa5bbD7-cAaxv-QCeUkieKrf5G/exec?value1=3&value2=4&value3=6 HTTP/1.1");
       client.println();
     } 
   }
