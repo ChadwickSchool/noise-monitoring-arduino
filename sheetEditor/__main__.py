@@ -8,7 +8,7 @@ from google.oauth2 import service_account
 
 def send():
     SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
-    SERVICE_ACCOUNT_FILE = 'keys2.json'
+    SERVICE_ACCOUNT_FILE = 'creds/keys.json'
     creds = None 
     creds = service_account.Credentials.from_service_account_file(
         SERVICE_ACCOUNT_FILE, scopes=SCOPES)
@@ -24,6 +24,6 @@ def send():
 
 def main():
     send()
-
-main()
+if __name__ == "__main__":
+    main()
     
