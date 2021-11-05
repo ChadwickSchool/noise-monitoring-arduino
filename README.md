@@ -1,4 +1,25 @@
-# noise-monitoring-arduino
+s# noise-monitoring-arduino
+
+## Setting up Virtual Environment
+
+This project requires python 3.10. Assume you have `virtualenv` installed. (If not run `pip install virtualenv`).
+
+1. Setup virtual environment at root of project. Run `virtualenv -p python3.10 venv`
+    * This will create a directory `venv` in your root directory. This directory is in the .gitignore and should not be committed
+
+## Setting up the project
+
+Anytime you work on this project, you should activate the virtual environment.
+
+1. source `venv/bin/activate`.
+  * You should see `(venv)` at the beginning of your console prompt. This means you're in the environment.
+
+2. Run `pip install -r requirements.txt`
+  * This will install all of the projects dependencies inside the virtual environment.
+
+## Running the Project
+
+
 
 The noise monitoring arduino will detect the current sound level and trigger a RGB LED based on the volume reading.
 
@@ -19,3 +40,5 @@ General settings:
 - rainbowModeDelaySec (time in seconds taken between colors displayed for rainbowMode)*
 
 *grove_main only
+
+
