@@ -1,4 +1,5 @@
 from __future__ import print_function
+#from _typeshed import Self
 import os.path
 import os
 from googleapiclient.discovery import build
@@ -11,17 +12,23 @@ import datetime
 class SheetEditor(object):
     def __init__(self):
         self.SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
-        self.SERVICE_ACCOUNT_FILE = 'creds/keysNew.json'
+        self.SERVICE_ACCOUNT_FILE = os.getenv("SERVICE_ACCOUNT_FILE")
         self.creds = service_account.Credentials.from_service_account_file(
         self.SERVICE_ACCOUNT_FILE, scopes=self.SCOPES)
-        self.SAMPLE_SPREADSHEET_ID = '1Gt-uwLcnEuY6wUygzd6ovZx7KOEWHXH22nz9kZkGUV0'
-        self.SAMPLE_RANGE_NAME = "10/27/2021!A3" 
+        self.SPREADSHEET_ID = '1Gt-uwLcnEuY6wUygzd6ovZx7KOEWHXH22nz9kZkGUV0'
+        self.SAMPLE_RANGE_NAME = "10/27/2021!A3" #this needs to be dynamic not static
         self.service = build('sheets', 'v4', credentials=self.creds)
         self.sheet = self.service.spreadsheets()
   
     def send(self,avgVal,maxVal):
         val = [["value",avgVal, "value",maxVal]]
         request = self.sheet.values().update(
-            spreadsheetId=self.SAMPLE_SPREADSHEET_ID, range=self.SAMPLE_RANGE_NAME,
+            spreadsheetId=self.SPREADSHEET_ID, range=self.SAMPLE_RANGE_NAME,
             valueInputOption="USER_ENTERED", body={"values":val}).execute()
         print("end") 
+
+    def readRange(self):
+        result = self.sheet.values().get(
+        spreadsheetId=self.SPREADSHEET_ID, range=self.SAMPLE_RANGE_NAME).execute()
+        rows = result.get('values', [])
+        print('{0} rows retrieved.'.format(len(rows)))
