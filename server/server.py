@@ -1,5 +1,7 @@
 from flask import Flask, request
-from sheetEditor import send
+from sheetEditor import SheetEditor
+
+obj = SheetEditor()
 
 app = Flask(__name__)
 
@@ -16,6 +18,6 @@ def update_sheet():
     print(requestArgs["avg"])
     print(requestArgs["max"])
 
-    send(requestArgs["avg"],requestArgs["max"])
+    obj.send(requestArgs["avg"],requestArgs["max"])
 
     return f"Done: {requestArgs}\n"

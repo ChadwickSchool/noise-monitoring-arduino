@@ -3,8 +3,10 @@ from sheetEditor import SheetEditor
 
 def main():
     obj = SheetEditor()
-    #obj.send(10, 50)
-    obj.readRange()
+    obj.send(10, 9001)
+    #obj.getNumRows()
+    #obj.getSheets()
+    #obj.autoSheetName()
 
 if __name__ == "__main__":
     main()
