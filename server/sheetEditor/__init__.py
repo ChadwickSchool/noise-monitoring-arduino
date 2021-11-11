@@ -45,7 +45,6 @@ class SheetEditor(object):
             name = x.get("properties", {}).get("title", "Sheet1")
             sheetNames.append(name)
         return sheetNames
-        
             
     def send(self,avgVal,maxVal):
         val = [["avg",avgVal, "max",maxVal]]
@@ -53,8 +52,7 @@ class SheetEditor(object):
         numRows = self.getNumRows(currentSheetName)
         rowToWrite = numRows + 1
         RANGE = currentSheetName + "!A" + str(rowToWrite)
-        print(RANGE)
-        request = self.sheet.values().update(
+        self.sheet.values().update(
             spreadsheetId=self.SPREADSHEET_ID, range=RANGE,
             valueInputOption="USER_ENTERED", body={"values":val}).execute()
         print("end") 
