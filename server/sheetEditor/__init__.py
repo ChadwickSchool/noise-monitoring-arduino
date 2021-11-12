@@ -37,11 +37,8 @@ class SheetEditor(object):
 
     def __init__(self):
         """
-<<<<<<< HEAD
-        initialise SheetEditor Object
-=======
-        
->>>>>>> 2d1599deeb288bed6d53cb5c773a10dbb3023acb
+        Initialise SheetEditor Object
+
         """
 
         SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
