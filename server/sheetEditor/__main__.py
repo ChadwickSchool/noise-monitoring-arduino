@@ -7,6 +7,7 @@ def main():
     #obj.getNumRows()
     #obj.getSheets()
     #obj.autoSheetName()
+    #obj.newSheet("lol")
 
 if __name__ == "__main__":
     main()

@@ -35,8 +35,25 @@ class SheetEditor(object):
                 return sheetName
 
         #need to creat new sheet here with name date only here if a sheet doesn't exist 
+        self.newSheet(date)
         return date
 
+    def newSheet(self, name):
+         #spreadsheet_metadata = self.sheet.get(spreadsheetId=self.SPREADSHEET_ID).execute()
+        batch_update_spreadsheet_request_body = {
+            'requests': [
+                {
+                    'addSheet': {
+                        'properties': {
+                            'title': name
+                        }   
+                    }
+                }
+            ]
+        }
+        updateRequest = self.sheet.batchUpdate(spreadsheetId=self.SPREADSHEET_ID, body=batch_update_spreadsheet_request_body)
+        updateRequest.execute()
+        
     def getSheets(self):
         spreadsheet_metadata = self.sheet.get(spreadsheetId=self.SPREADSHEET_ID).execute()
         sheets = spreadsheet_metadata.get('sheets', '')
