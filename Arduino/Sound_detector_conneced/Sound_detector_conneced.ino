@@ -9,15 +9,11 @@
   double avg = 0;
   int maxSound = 0;
 
-  // value1=5&value2=512&value3=560
-  //https://script.google.com/macros/s/AKfycbwbWCePDN1JfOb7qBkFjAIIqerS5dISDM41FLeW9Vx13pkJIfbBTbDCQAKHrNd5mBVo/exec?value1=5&value2=512
-  String post = "/macros/s/AKfycbwbWCePDN1JfOb7qBkFjAIIqerS5dISDM41FLeW9Vx13pkJIfbBTbDCQAKHrNd5mBVo/exec?";
-  String postWithData = "";
+  String severIP = "10.11.2.76:8000";
+  String httpRequest = "";
   
 void setup() {
-  
   Serial.begin(1000000); // setup serial
-
 }
 
 void loop() {
@@ -27,7 +23,7 @@ void loop() {
   maxSound = max(maxSound,relativeSound); // find the max sound with the max fucntion
   if (count == 1000) { // if it has looped 1000 times
     avg = (double)sum / (double)count; // caculute the avrage
-    postWithData = post + "value1=" + (String)avg + "&value2=" + (String)maxSound; // format data into a sendable form
+    httpRequest = "http://" + severIP + "/update-sheet?" + "avg=" + (String)avg + "&max=" + (String)maxSound; // format data into a sendable form
     sum = 0; // reset values back down to 0
     count = 0;
     avg = 0;
