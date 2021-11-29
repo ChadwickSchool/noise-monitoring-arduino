@@ -20,7 +20,7 @@ class SheetEditor(object):
         the id of the google spreadsheet
     sheet : googleapiclient.discovery.Resource
         interact with google spreadsheets API
-    
+
     Methods
     -------
     getNumRows(sheetName)
@@ -28,7 +28,7 @@ class SheetEditor(object):
     autoSheetName()
         Finds or creates a sheet with its name being the current date(mm/dd/yy)
     newSheet(name)
-        Creates a new sheet with parameter name 
+        Creates a new sheet with parameter name
     getSheets(self)
         Gets a list of sheet names from a spreadsheet
     send(self,avgVal,maxVal)
@@ -37,7 +37,6 @@ class SheetEditor(object):
 
     def __init__(self):
         """
-        Initialise SheetEditor Object
 
         """
 
@@ -47,7 +46,7 @@ class SheetEditor(object):
         self.SPREADSHEET_ID = '1Gt-uwLcnEuY6wUygzd6ovZx7KOEWHXH22nz9kZkGUV0'
         service = build('sheets', 'v4', credentials=creds)
         self.sheet = service.spreadsheets()
-  
+
     def getNumRows(self,sheetName):
         """ Gets the number of rows in a sheet
 
@@ -56,7 +55,7 @@ class SheetEditor(object):
         Parameters
         ----------
         sheetName : str
-            the name of the sheet 
+            the name of the sheet
         """
 
         result = self.sheet.values().get(
@@ -66,8 +65,8 @@ class SheetEditor(object):
 
     def autoSheetName(self):
         """ Finds or creates a sheet with its name being the current date(mm/dd/yy)
-        
-        Loops through a list of sheet names and checks if they are the current date. If one is the current date then return. 
+
+        Loops through a list of sheet names and checks if they are the current date. If one is the current date then return.
         Else Create a new sheet with name date and return the date as the name.
 
         Returns
@@ -89,7 +88,7 @@ class SheetEditor(object):
         return date
 
     def newSheet(self, name):
-        """ Creates a new sheet with parameter name 
+        """ Creates a new sheet with parameter name
 
         Parameters
         ----------
@@ -102,15 +101,16 @@ class SheetEditor(object):
                 {
                     'addSheet': {
                         'properties': {
-                            'title': name
-                        }   
+                            'title': name,
+                            'index': 1
+                        }
                     }
                 }
             ]
         }
         updateRequest = self.sheet.batchUpdate(spreadsheetId=self.SPREADSHEET_ID, body=batch_update_spreadsheet_request_body)
         updateRequest.execute()
-        
+
     def getSheets(self):
         """ Gets a list of sheet names from a spreadsheet
 
@@ -127,7 +127,7 @@ class SheetEditor(object):
             name = x.get("properties", {}).get("title", "Sheet1")
             sheetNames.append(name)
         return sheetNames
-            
+
     def send(self,avgVal,maxVal):
         """ Writes to a google sheet with name date on the next undedited row
 
@@ -150,5 +150,4 @@ class SheetEditor(object):
         self.sheet.values().update(
             spreadsheetId=self.SPREADSHEET_ID, range=RANGE,
             valueInputOption="USER_ENTERED", body={"values":val}).execute()
-        print("end") 
-
+        print("end")
