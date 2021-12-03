@@ -8,6 +8,11 @@ def main():
     #obj.getSheets()
     #obj.autoSheetName()
     #obj.newSheet("lol")
+    #obj.getSpreadSheetData()
+    #obj.addNewChart(0 , "bleh")
+    #obj.indexSheetId()
+    #obj.getJsonStuff()
+
 
 if __name__ == "__main__":
     main()
