@@ -10,8 +10,9 @@ def main():
     #obj.newSheet("lol")
     #obj.getSpreadSheetData()
     #obj.addNewChart(0 , "bleh")
+    #obj.indexSheetId()
+    #obj.getJsonStuff()
 
-    #obj.indexSheetId(1)
 
 if __name__ == "__main__":
     main()
