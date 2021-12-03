@@ -9,6 +9,7 @@ from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google.oauth2 import service_account
 import datetime
+import json
 
 from pyasn1.type.univ import Null
 
@@ -188,72 +189,62 @@ class SheetEditor(object):
                         #],
                         "domains": [
                             {
-                            "domain": {
-                                "sourceRange": {
-                                "sources": [
-                                    {
-                                    "sheetId": sheetId,
-                                    "startRowIndex": 0,
-                                    "endRowIndex": 7,
-                                    "startColumnIndex": 0,
-                                    "endColumnIndex": 1
+                                "domain": {
+                                    "sourceRange": {
+                                        "sources": [
+                                            {
+                                                "sheetId": sheetId,
+                                                "startRowIndex": 0,
+                                                "endRowIndex": 1000,
+                                                "startColumnIndex": 1,
+                                                "endColumnIndex": 2
+                                            }
+                                        ]
                                     }
-                                ]
                                 }
-                            }
                             }
                         ],
                         "series": [
                             {
-                            "series": {
-                                "sourceRange": {
-                                "sources": [
-                                    {
-                                    "sheetId": sheetId,
-                                    "startRowIndex": 0,
-                                    "endRowIndex": 7,
-                                    "startColumnIndex": 1,
-                                    "endColumnIndex": 2
+                                "series": {
+                                    "sourceRange": {
+                                        "sources": [
+                                            {
+                                                "sheetId": sheetId,
+                                                "startRowIndex": 0,
+                                                "endRowIndex": 1000,
+                                                "startColumnIndex": 3,
+                                                "endColumnIndex": 4
+                                            }
+                                        ]
                                     }
-                                ]
+                                },
+                                "targetAxis": "LEFT_AXIS",
+                                "dataLabel": {
+                                    "type": "NONE",
+                                    "textFormat": {
+                                        "fontFamily": "Roboto"
+                                    }
                                 }
-                            },
-                            "targetAxis": "LEFT_AXIS"
                             },
                             {
-                            "series": {
-                                "sourceRange": {
-                                "sources": [
-                                    {
-                                    "sheetId": sheetId,
-                                    "startRowIndex": 0,
-                                    "endRowIndex": 7,
-                                    "startColumnIndex": 2,
-                                    "endColumnIndex": 3
+                                "series": {
+                                    "sourceRange": {
+                                        "sources": [
+                                            {
+                                                "sheetId": sheetId,
+                                                "startRowIndex": 0,
+                                                "endRowIndex": 1000,
+                                                "startColumnIndex": 5,
+                                                "endColumnIndex": 6
+                                            }
+                                        ]
                                     }
-                                ]
-                                }
-                            },
-                            "targetAxis": "LEFT_AXIS"
-                            },
-                            {
-                            "series": {
-                                "sourceRange": {
-                                "sources": [
-                                    {
-                                    "sheetId": sheetId,
-                                    "startRowIndex": 0,
-                                    "endRowIndex": 7,
-                                    "startColumnIndex": 3,
-                                    "endColumnIndex": 4
-                                    }
-                                ]
-                                }
-                            },
-                            "targetAxis": "LEFT_AXIS"
+                                },
+                                "targetAxis": "LEFT_AXIS"
                             }
                         ],
-                        "headerCount": 1
+                        "headerCount": 0
                         }
                     },
                     "position": {
@@ -286,6 +277,20 @@ class SheetEditor(object):
             updateRequest.execute()
             print("no chart creating one")
 
+    def getJsonStuff(self):
+        """get json stuff
+        
+        """
+        spreadsheet_metadata = self.sheet.get(spreadsheetId=self.SPREADSHEET_ID).execute()
+        sheets = spreadsheet_metadata.get('sheets', '')
+        charts = []
+        for x in sheets:
+            name = x.get("charts", {})
+            print(json.dumps(name, indent=4))
+            print("")
+        
+
+
     def send(self,avgVal,maxVal):
         """ Writes to a google sheet with name date on the next undedited row
 
@@ -300,13 +305,14 @@ class SheetEditor(object):
             the input for writing to the max col
         """
 
-        val = [["avg",avgVal, "max",maxVal]]
+        d = datetime.datetime
+        val = [["Time", d.now().strftime("%X"), "avg",avgVal, "max",maxVal]]
         currentSheetName = self.autoSheetName()
         numRows = self.getNumRows(currentSheetName)
         self.addNewChart(self.indexSheetId(1),currentSheetName)
         rowToWrite = numRows + 1
-        RANGE = currentSheetName + "!A" + str(rowToWrite)
+        rangeToWrite = currentSheetName + "!A" + str(rowToWrite)
         self.sheet.values().update(
-            spreadsheetId=self.SPREADSHEET_ID, range=RANGE,
+            spreadsheetId=self.SPREADSHEET_ID, range=rangeToWrite,
             valueInputOption="USER_ENTERED", body={"values":val}).execute()
         print("end")
