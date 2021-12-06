@@ -49,6 +49,8 @@ class SheetEditor(object):
         self.SPREADSHEET_ID = '1Gt-uwLcnEuY6wUygzd6ovZx7KOEWHXH22nz9kZkGUV0'
         service = build('sheets', 'v4', credentials=creds)
         self.sheet = service.spreadsheets()
+        self.spreadsheetMetadata = self.sheet.get(spreadsheetId=self.SPREADSHEET_ID).execute()
+
 
     def getNumRows(self,sheetName):
         """ Gets the number of rows in a sheet
@@ -113,6 +115,7 @@ class SheetEditor(object):
         }
         updateRequest = self.sheet.batchUpdate(spreadsheetId=self.SPREADSHEET_ID, body=batch_update_spreadsheet_request_body)
         updateRequest.execute()
+        self.updateSheetMetaData()
 
     def indexSheetId(self,sheetIndex):
         """ Gets the sheet id of the sheet at an index
@@ -127,8 +130,8 @@ class SheetEditor(object):
         sheetId
             the sheetId of the sheet at the input index
         """
-        spreadsheet_metadata = self.sheet.get(spreadsheetId=self.SPREADSHEET_ID).execute()
-        sheets = spreadsheet_metadata.get('sheets', '')
+
+        sheets = self.spreadsheetMetadata.get('sheets', '')
         sheetId = ""
 
         for sheet in sheets:
@@ -148,8 +151,7 @@ class SheetEditor(object):
             a list of strings that are the names of the sheets in a spreadsheet
         """
 
-        spreadsheet_metadata = self.sheet.get(spreadsheetId=self.SPREADSHEET_ID).execute()
-        sheets = spreadsheet_metadata.get('sheets', '')
+        sheets = self.spreadsheetMetadata.get('sheets', '')
         sheetNames = []
         for x in sheets:
             name = x.get("properties", {}).get("title", "Sheet1")
@@ -266,8 +268,8 @@ class SheetEditor(object):
             ]
             }    
 
-        spreadsheet_metadata = self.sheet.get(spreadsheetId=self.SPREADSHEET_ID).execute()
-        sheets = spreadsheet_metadata.get('sheets', '')
+
+        sheets = self.spreadsheetMetadata.get('sheets', '')
         for sheet in sheets:
             if(sheet.get("properties", {}).get("sheetId", "Sheet1") == sheetId):
                 currentSheet = sheet    
@@ -275,20 +277,33 @@ class SheetEditor(object):
         if currentSheet.get("charts", {}) == {}: # if the sheet does not have a chart then make a chart
             updateRequest = self.sheet.batchUpdate(spreadsheetId=self.SPREADSHEET_ID, body=batch_update_spreadsheet_request_body)
             updateRequest.execute()
+            self.updateSheetMetaData()
             print("no chart creating one")
 
     def getJsonStuff(self):
         """get json stuff
         
         """
-        spreadsheet_metadata = self.sheet.get(spreadsheetId=self.SPREADSHEET_ID).execute()
-        sheets = spreadsheet_metadata.get('sheets', '')
+
+        sheets = self.spreadsheetMetadata.get('sheets', '')
         charts = []
         for x in sheets:
             name = x.get("charts", {})
-            print(json.dumps(name, indent=4))
-            print("")
+            #print(json.dumps(name, indent=4))
+            #print("")
+
+        print(json.dumps(self.spreadsheetMetadata, indent = 2))
         
+    def updateSheetMetaData(self):
+        """ Updates the spreadsheets meta data in the python class
+
+        Updates the spreadsheets meta data that is stored in the class in order to send less read requests to google. 
+        This will speed up the prosses and helps pervent google from throwing errors for too many requests.
+        Use this method after writing to the spreadsheet inorder to have the most updated version of the spreadsheet stored localy. 
+        
+        """
+        self.spreadsheetMetadata = self.sheet.get(spreadsheetId=self.SPREADSHEET_ID).execute() # data of the spreadsheet
+
 
 
     def send(self,avgVal,maxVal):
@@ -315,4 +330,5 @@ class SheetEditor(object):
         self.sheet.values().update(
             spreadsheetId=self.SPREADSHEET_ID, range=rangeToWrite,
             valueInputOption="USER_ENTERED", body={"values":val}).execute()
+        self.updateSheetMetaData()
         print("end")
