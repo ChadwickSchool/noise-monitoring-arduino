@@ -107,6 +107,10 @@ class SheetEditor(object):
                     'addSheet': {
                         'properties': {
                             'title': name,
+                            "gridProperties": {
+                                "rowCount": 10000,
+                                "columnCount": 24
+                            },
                             'index': 1
                         }
                     }
@@ -197,7 +201,7 @@ class SheetEditor(object):
                                             {
                                                 "sheetId": sheetId,
                                                 "startRowIndex": 0,
-                                                "endRowIndex": 1000,
+                                                "endRowIndex": 10000,
                                                 "startColumnIndex": 1,
                                                 "endColumnIndex": 2
                                             }
@@ -214,7 +218,7 @@ class SheetEditor(object):
                                             {
                                                 "sheetId": sheetId,
                                                 "startRowIndex": 0,
-                                                "endRowIndex": 1000,
+                                                "endRowIndex": 10000,
                                                 "startColumnIndex": 3,
                                                 "endColumnIndex": 4
                                             }
@@ -304,9 +308,23 @@ class SheetEditor(object):
         """
         self.spreadsheetMetadata = self.sheet.get(spreadsheetId=self.SPREADSHEET_ID).execute() # data of the spreadsheet
 
+    def makeVal(self,rowsToWrite):
+        val = []
+        for row in rowsToWrite:
+            cellVal = []
+            cellVal.append("Time")
+            cellVal.append(row.get_time())
+            cellVal.append("avg")
+            cellVal.append(row.get_average())
+            cellVal.append("max")
+            cellVal.append(row.get_max())
+            val.append(cellVal)
+        print(val)
+        return val
 
 
-    def send(self,avgVal,maxVal):
+
+    def send(self,rowsToWrite):
         """ Writes to a google sheet with name date on the next undedited row
 
         Writes to a google spreadsheet and willl check if it has a sheet with a name of the current date(mm/dd/yy)
@@ -321,7 +339,8 @@ class SheetEditor(object):
         """
 
         d = datetime.datetime
-        val = [["Time", d.now().strftime("%X"), "avg",avgVal, "max",maxVal]]
+        #val = [["Time", d.now().strftime("%X"), "avg",avgVal, "max",maxVal]] # make thing 
+        val = self.makeVal(rowsToWrite)
         currentSheetName = self.autoSheetName()
         numRows = self.getNumRows(currentSheetName)
         self.addNewChart(self.indexSheetId(1),currentSheetName)
