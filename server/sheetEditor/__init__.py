@@ -319,7 +319,6 @@ class SheetEditor(object):
             cellVal.append("max")
             cellVal.append(row.get_max())
             val.append(cellVal)
-        print(val)
         return val
 
 

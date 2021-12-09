@@ -31,6 +31,6 @@ def update_sheet():
     lotsOfData.append(sentData)
     if(len(lotsOfData) > 10):
         obj.send(lotsOfData)
-        lotsOfData.clear
+        lotsOfData.clear()
     
     return f"Done: {requestArgs}\n"
