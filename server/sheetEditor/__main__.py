@@ -1,11 +1,23 @@
 from os import wait
+from re import S
 from sheetEditor import SheetEditor
+from sheetEditor.sound_Data import soundData
 #from sheetEditor import readRange
 
 def main():
     obj = SheetEditor()
-    obj.send(10, 9001)
-    obj.send(11, 9002)
+    sendData = soundData(12, 10, 11)
+    testSendDataList = []
+
+    i = 0
+    while(i < 10):
+        testSendDataList.append(sendData)
+        i = i + 1
+    #print(sendData.get_average())
+    #obj.makeVal(testSendDataList)
+
+    #print(sendData.get_time())
+    obj.send(testSendDataList)
     #obj.getNumRows("12/03/21")
     #obj.getSheets()
     #obj.autoSheetName()
