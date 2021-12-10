@@ -1,13 +1,36 @@
+import re
 from flask import Flask, request
 from werkzeug.utils import send_file, send_from_directory
 from sheetEditor import SheetEditor
 from sheetEditor.sound_Data import soundData
+from queue import Queue
 import datetime
+import time
+import threading
 
- 
+class RequestProcessor(object):
+    def process_requests():
+        print("Request Process is Starting")
+        listOfData = []
+        while True: 
+            if(requestQueue.empty() != True):
+                listOfData.append(requestQueue.get())
+                if(len(listOfData) > 100):
+                    obj.send(listOfData)
+                    listOfData.clear()
+            else:
+                time.sleep(10)
+
+    # Else sleep for 0.5 seconds
+    ## Takes one request off the queue and processes it
+
+processThread = threading.Thread(target=RequestProcessor.process_requests)
+
+
+    
+
 obj = SheetEditor()
-lotsOfData = []
-
+requestQueue = Queue()
 
 app = Flask(__name__)
 
@@ -17,6 +40,9 @@ def hello_world():
 
 @app.route("/update-sheet")
 def update_sheet():
+    if not processThread.is_alive():
+        processThread.start()
+    # TODO: Add request to a queue
     requestArgs = request.args
     # class with time, avg, and max
     # add class to a list 
@@ -28,9 +54,7 @@ def update_sheet():
 
     d = datetime.datetime
     sentData = soundData(d.now().strftime("%X"), requestArgs["avg"], requestArgs["max"])
-    lotsOfData.append(sentData)
-    if(len(lotsOfData) > 10):
-        obj.send(lotsOfData)
-        lotsOfData.clear()
-    
+    requestQueue.put(sentData)
     return f"Done: {requestArgs}\n"
+
+
