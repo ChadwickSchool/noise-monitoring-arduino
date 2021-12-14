@@ -16,7 +16,7 @@ class SheetEditor(object):
         self.SAMPLE_RANGE_NAME = "10/27/2021!A3" 
         self.service = build('sheets', 'v4', credentials=self.creds)
         self.sheet = self.service.spreadsheets()
-  
+   
     def send(self,avgVal,maxVal):
         val = [["value",avgVal],["value",maxVal]]
         request = self.sheet.values().update(
