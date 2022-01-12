@@ -9,7 +9,7 @@ String postData = "value1=4";      // test data value
 
 
 WiFiClient client;                 // Initialize the client library              
-IPAddress server(10,11,128,175);   //the IP Address of the server the Arduino will connect to 
+IPAddress server(10,11,0,57);   //the IP Address of the server the Arduino will connect to 
 
  
 int baseLine = 508;  //sound calibration value
