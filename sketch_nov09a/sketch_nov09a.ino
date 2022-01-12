@@ -9,7 +9,7 @@ char pass[] = "godolphins";   // your network password
 String postData = "value1=4";
 // Initialize the client library
 WiFiClient client;
-IPAddress server(10,11,128,175);
+IPAddress server(10,11,0,57);
 
 int baseLine = 508; 
 
