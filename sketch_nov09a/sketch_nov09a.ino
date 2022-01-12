@@ -1,4 +1,4 @@
-#include <SPI.h>
+#include <SPI.h>            //these are libraries for the Serial and Wifi connections
 #include <WiFiNINA.h>
 #include <HttpClient.h>
 #include "HTTPClient.h"
@@ -44,14 +44,14 @@ void startConnection() {
 
 //connects the Arduino to Wifi
 void setup() {
-    Serial.begin(9600);
+    Serial.begin(9600);    //begins the Serial
     Serial.println("hi"); 
   
   while (WiFi.status() != WL_CONNECTED) {
       Serial.println("Not Connected to Wifi"); 
-    WiFi.begin (ssid,pass); 
+    WiFi.begin (ssid,pass);      //start the connection
     if (WiFi.status() != WL_CONNECTED) {
-      Serial.println("Bad");
+      Serial.println("Bad");      //the Arduino should be connected to Wifi at this point
     }
   }     
 
@@ -59,7 +59,7 @@ void setup() {
     Serial.println("\nStarting connection...");
     // if you get a connection, report back via serial:
     if (client.connect(server, 8000)) {
-      Serial.println("connected");
+      Serial.println("connected");  
     }
 }
 
