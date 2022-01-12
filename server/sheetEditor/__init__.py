@@ -108,7 +108,7 @@ class SheetEditor(object):
                         'properties': {
                             'title': name,
                             "gridProperties": {
-                                "rowCount": 10000,
+                                "rowCount": 100000,
                                 "columnCount": 24
                             },
                             'index': 1
@@ -183,16 +183,6 @@ class SheetEditor(object):
                         "basicChart": {
                         "chartType": "LINE",
                         "legendPosition": "BOTTOM_LEGEND",
-                        #"axis": [
-                         #   {
-                          #  "position": "BOTTOM_AXIS",
-                           # "title": "Model Numbers"
-                            #},
-                            #{
-                            #"position": "LEFT_AXIS",
-                            #"title": "Sales"
-                            #}
-                        #],
                         "domains": [
                             {
                                 "domain": {
@@ -201,7 +191,7 @@ class SheetEditor(object):
                                             {
                                                 "sheetId": sheetId,
                                                 "startRowIndex": 0,
-                                                "endRowIndex": 10000,
+                                                "endRowIndex": 100000,
                                                 "startColumnIndex": 1,
                                                 "endColumnIndex": 2
                                             }
@@ -218,7 +208,7 @@ class SheetEditor(object):
                                             {
                                                 "sheetId": sheetId,
                                                 "startRowIndex": 0,
-                                                "endRowIndex": 10000,
+                                                "endRowIndex": 100000,
                                                 "startColumnIndex": 3,
                                                 "endColumnIndex": 4
                                             }
@@ -240,7 +230,7 @@ class SheetEditor(object):
                                             {
                                                 "sheetId": sheetId,
                                                 "startRowIndex": 0,
-                                                "endRowIndex": 1000,
+                                                "endRowIndex": 100000,
                                                 "startColumnIndex": 5,
                                                 "endColumnIndex": 6
                                             }
@@ -293,8 +283,8 @@ class SheetEditor(object):
         charts = []
         for x in sheets:
             name = x.get("charts", {})
-            #print(json.dumps(name, indent=4))
-            #print("")
+            print(json.dumps(name, indent=4))
+            nprint("")
 
         print(json.dumps(self.spreadsheetMetadata, indent = 2))
         
@@ -319,6 +309,7 @@ class SheetEditor(object):
             cellVal.append("max")
             cellVal.append(row.get_max())
             val.append(cellVal)
+            print(row.get_time())
         return val
 
 
