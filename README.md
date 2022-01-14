@@ -31,8 +31,13 @@ Anytime setting up the system you should double check that the ip your sending t
 #### Configuring Google API
 
 This project uses Google's Spreadsheets API. 
-
-
+1. Go to the Google cloud APIs and Services site.
+2.  Click on "Enable APIs and Services", and click on the Google Sheets API.
+3.  Click on "Credetials" and then "Manage service accounts"
+4.  Create a new Service account, and give it editor permissions
+5.  Share the Google Sheets project with the service account's email address
+6.  Click on "Add Key", and select JSON. The Key will now download to your computer.
+7.  Move the Key file into your working folder. Rename it to "keys.json" 
 
 
 ## Running the Project
