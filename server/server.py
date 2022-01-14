@@ -60,12 +60,7 @@ def update_sheet():
     When starting up for the first time checks if there is a thread for the queue and if there isn't creates one.
     Agruments are passed in throught the url and formated into a class that stores the arguments and the time.
     the data is then passed into a queue.
-
-    """
-    if not processThread.is_alive():
-        processThread.start()
-    # TODO: Add request to a queue
-    requestArgs = request.args
+    
     # class with time, avg, and max
     # add class to a list 
     # after x many are in a list 
@@ -74,10 +69,14 @@ def update_sheet():
     # then send 2D array as val to updatespreadhseet body 
     # send data
 
+    """
+    if not processThread.is_alive():
+        processThread.start()
+    # TODO: Add request to a queue
+    requestArgs = request.args
     d = datetime.datetime
     sentData = soundData(d.now().strftime("%H:%M:%S.%f"), requestArgs["avg"], requestArgs["max"])
     requestQueue.put(sentData)
-    print(d.now().strftime("%H:%M:%S.%f"))
     return f"Done: {requestArgs}\n"
 
 
