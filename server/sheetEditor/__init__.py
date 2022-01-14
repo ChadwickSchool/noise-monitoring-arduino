@@ -39,7 +39,7 @@ class SheetEditor(object):
     """
 
     def __init__(self):
-        """
+        """Initialize SheeEditor
 
         """
 
@@ -275,16 +275,9 @@ class SheetEditor(object):
             print("no chart creating one")
 
     def getJsonStuff(self):
-        """get json stuff
-        
         """
-
-        sheets = self.spreadsheetMetadata.get('sheets', '')
-        charts = []
-        for x in sheets:
-            name = x.get("charts", {})
-            print(json.dumps(name, indent=4))
-            nprint("")
+        Get json stuff.
+        """
 
         print(json.dumps(self.spreadsheetMetadata, indent = 2))
         
@@ -296,7 +289,7 @@ class SheetEditor(object):
         Use this method after writing to the spreadsheet inorder to have the most updated version of the spreadsheet stored localy. 
         
         """
-        self.spreadsheetMetadata = self.sheet.get(spreadsheetId=self.SPREADSHEET_ID).execute() # data of the spreadsheet
+        self.spreadsheetMetadata = self.sheet.get(spreadsheetId=self.SPREADSHEET_ID).execute()
 
     def makeVal(self,rowsToWrite):
         val = []
@@ -309,7 +302,6 @@ class SheetEditor(object):
             cellVal.append("max")
             cellVal.append(row.get_max())
             val.append(cellVal)
-            print(row.get_time())
         return val
 
 
