@@ -19,8 +19,19 @@ Anytime you work on this project, you should activate the virtual environment.
 
 ## Running the Project
 
-
-
 The noise monitoring arduino will detect the current sound level and send the data to a google spreadsheet. 
+
+Anytime starting up the flask sever make sure to be in a the virtual enviroment.
+
+1. source `run.sh`
+  * This will run the flask sever.
+
+Anytime setting up the system you should double check that the ip your sending to is correct.
+
+1. Find the ip of the sever you are sending to by running source `run.sh` in the command line. 
+
+2. Check if the ip of the sever is the same ip as the Arduino code located at `sketch_nov09a/sketch_nov09a.ino`
+
+3. If they are the same run the Arduino. If not change the ip to the one in step 1. then upload sketch to Arduino.
 
 
